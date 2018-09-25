@@ -1,0 +1,64 @@
+jQuery( document ).ready(
+	function( $ ) {
+
+		var valuesToCheck = [], conditionalValuesToCheck = [];
+
+		$( '.psp-type' ).each( function( i, item ) {
+			valuesToCheck.push( $( this ).data( 'psp-type' ) );
+		});
+
+		var data = {
+			action: 'psp_get_user_data',
+			values: valuesToCheck,
+			security: wp_vars.security
+		};
+
+		$.post( wp_vars.ajaxurl, data, function( response ) {
+
+			if ( response.data.length ) {
+
+				$.each( response.data, function( i, item ){
+
+					if ( item.value ) {
+
+						$( '[data-psp-type="' + item.type + '"' ).each( function( i, el ) {
+							$( el ).text( item.value );
+						});
+					}
+				});
+			}
+		} );
+
+		$( '.psp-conditional' ).each( function( i, item ) {
+			conditionalValuesToCheck.push( {
+				content: $( this ).data( 'psp-content' ),
+				values: $( this ).data( 'psp-values' ),
+				type: $( this ).data( 'psp-type' ),
+				exclude: $( this ).data( 'psp-exclude' ),
+				id: $( this ).data( 'psp-id' )
+			} );
+		});
+
+		var data = {
+			action: 'psp_conditional_content',
+			values: conditionalValuesToCheck,
+			security: wp_vars.security
+		};
+
+		$.post( wp_vars.ajaxurl, data, function( response ) {
+
+			if ( response.data.length ) {
+
+				$.each( response.data, function( i, item ){
+
+					if ( item.id ) {
+
+						$( '[data-psp-id="' + item.id + '"' ).each( function( i, el ) {
+							$( el ).text( item.content );
+						});
+					}
+				});
+			}
+		} );
+	}
+);

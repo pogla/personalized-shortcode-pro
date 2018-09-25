@@ -1,0 +1,391 @@
+<?php
+
+/**
+ * The public-facing functionality of the plugin.
+ *
+ * @link       https://maticpogladic.com/
+ * @since      1.0.0
+ *
+ * @package    Personalized_Shortcode_Pro
+ * @subpackage Personalized_Shortcode_Pro/public
+ */
+
+/**
+ * The public-facing functionality of the plugin.
+ *
+ * Defines the plugin name, version, and two examples hooks for how to
+ * enqueue the public-facing stylesheet and JavaScript.
+ *
+ * @package    Personalized_Shortcode_Pro
+ * @subpackage Personalized_Shortcode_Pro/public
+ * @author     Matic Pogladič <matic.pogladic@gmail.com>
+ */
+
+class Personalized_Shortcode_Pro_Public {
+
+	/**
+	 * The ID of this plugin.
+	 *
+	 * @since    1.0.0
+	 * @access   private
+	 * @var      string    $plugin_name    The ID of this plugin.
+	 */
+	private $plugin_name;
+
+	/**
+	 * The version of this plugin.
+	 *
+	 * @since    1.0.0
+	 * @access   private
+	 * @var      string    $version    The current version of this plugin.
+	 */
+	private $version;
+
+	/**
+	 * User data.
+	 *
+	 * @since    1.0.0
+	 * @access   private
+	 * @var      string    $user_data    array.
+	 */
+	private $user_data = array();
+
+	/**
+	 * Give each shortcode an id.
+	 *
+	 * @since    1.0.0
+	 * @access   private
+	 * @var      string    $incremental_id    int.
+	 */
+	private $incremental_id = 1;
+
+	/**
+	 * Initialize the class and set its properties.
+	 *
+	 * @since    1.0.0
+	 * @param      string    $plugin_name       The name of the plugin.
+	 * @param      string    $version    The version of this plugin.
+	 */
+	public function __construct( $plugin_name, $version ) {
+
+		$this->plugin_name = $plugin_name;
+		$this->version = $version;
+
+	}
+
+	/**
+	 * Register the stylesheets for the public-facing side of the site.
+	 *
+	 * @since    1.0.0
+	 */
+	public function enqueue_styles() {
+
+		/**
+		 * This function is provided for demonstration purposes only.
+		 *
+		 * An instance of this class should be passed to the run() function
+		 * defined in Personalized_Shortcode_Pro_Loader as all of the hooks are defined
+		 * in that particular class.
+		 *
+		 * The Personalized_Shortcode_Pro_Loader will then create the relationship
+		 * between the defined hooks and the functions defined in this
+		 * class.
+		 */
+
+		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/personalized-shortcode-pro-public.css', array(), $this->version, 'all' );
+
+	}
+
+	/**
+	 * Register the JavaScript for the public-facing side of the site.
+	 *
+	 * @since    1.0.0
+	 */
+	public function enqueue_scripts() {
+
+		/**
+		 * This function is provided for demonstration purposes only.
+		 *
+		 * An instance of this class should be passed to the run() function
+		 * defined in Personalized_Shortcode_Pro_Loader as all of the hooks are defined
+		 * in that particular class.
+		 *
+		 * The Personalized_Shortcode_Pro_Loader will then create the relationship
+		 * between the defined hooks and the functions defined in this
+		 * class.
+		 */
+
+		$ajax_nonce = wp_create_nonce( 'psp-public-js-nonce' );
+		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/personalized-shortcode-pro-public.js', array( 'jquery' ), $this->version, false );
+
+		wp_localize_script(
+			$this->plugin_name, 'wp_vars', array(
+				'security' => $ajax_nonce,
+				'ajaxurl'  => admin_url( 'admin-ajax.php' ),
+			)
+		);
+
+	}
+
+	/**
+	 * AJAX - Get user data. This makes sure it works also with caching plugins
+	 */
+	public function psp_get_user_data_ajax() {
+
+		if ( ! check_ajax_referer( 'psp-public-js-nonce', 'security', false ) || ! count( $_POST['values'] ) ) {
+			wp_send_json_error();
+		}
+
+		$response_array = array();
+
+		foreach ( $_POST['values'] as $type ) {
+			$response_array[] = array(
+				'type'  => $type,
+				'value' => $this->get_user_data( $type ),
+			);
+		}
+
+		wp_send_json_success( $response_array );
+	}
+
+	/**
+	 * AJAX - Check conditionals
+	 */
+	public function psp_conditional_content_ajax() {
+
+		if ( ! check_ajax_referer( 'psp-public-js-nonce', 'security', false ) || ! count( $_POST['values'] ) ) {
+			wp_send_json_error();
+		}
+
+		$response_array = array();
+
+		foreach ( $_POST['values'] as $item ) {
+
+			$val = $this->get_user_data( $item['type'] );
+			$content = $item['content'];
+
+			if ( ! self::should_show_content( $item['values'], $val, $item['exclude'] ) ) {
+				$content = '';
+			}
+
+			$response_array[] = array(
+				'id'      => $item['id'],
+				'content' => $content,
+			);
+		}
+
+		wp_send_json_success( $response_array );
+	}
+
+	/**
+	 * Start session if not started yet
+	 */
+	public function start_session() {
+		if( ! session_id() ) {
+			session_start();
+		}
+	}
+
+	/**
+	 * Shortcode to show visitor data
+	 *
+	 * @param $atts
+	 *
+	 * @return string
+	 */
+	public function psp_shortcode( $atts ) {
+
+		$atts = shortcode_atts( array(
+			'type'       => '',
+			'default'    => '',
+		), $atts );
+
+		if ( ! $atts['type'] ) {
+			return '';
+		}
+
+		$value = $this->get_user_data( $atts['type'] );
+
+		if ( ! $value && $atts['default'] ) {
+			$value = $atts['default'];
+		}
+
+		return "<span class='psp-type' data-psp-type='{$atts['type']}'>{$value}</span>";
+	}
+
+	/**
+	 * Shortcode for conditional content
+	 *
+	 * @param      $atts
+	 * @param null $content
+	 *
+	 * @return null|string
+	 */
+	public function psp_shortcode_conditional( $atts, $content = null ) {
+
+		if ( ! $content ) {
+			return '';
+		}
+
+		$atts = shortcode_atts( array(
+			'type'    => '',
+			'values'  => '',
+			'exclude' => '',
+		), $atts );
+
+		$val = $this->get_user_data( $atts['type'] );
+
+		$output = $content;
+		if ( ! self::should_show_content( $atts['values'], $val, $atts['exclude'] ) ) {
+			$output = '';
+		}
+
+		return '<span class="psp-conditional" data-psp-id="' . $this->incremental_id++ . '" data-psp-content="' . $content . '" data-psp-values="' . $atts['values'] . '" data-psp-type="' . $atts['type'] . '" data-psp-exclude="' . $atts['exclude'] . '" style="display: inline;">' . $output . '</span>';
+	}
+
+	/**
+	 * Check if content should show in shortcode
+	 *
+	 * @param $values
+	 * @param $type_val
+	 * @param $exclude
+	 *
+	 * @return bool
+	 */
+	private static function should_show_content( $values, $type_val, $exclude ) {
+
+		$values = explode( ',', $values );
+
+		foreach ( $values as $value ) {
+			$value = trim( $value );
+			if ( strtolower( $value ) == strtolower( $type_val ) ) {
+
+				if ( 'true' != $exclude ) {
+					return true;
+				} else {
+					return false;
+				}
+			}
+		}
+
+		if ( 'true' != $exclude ) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+
+	/**
+	 * Get user data by type
+	 *
+	 * @param $type
+	 *
+	 * @return bool|string
+	 */
+	public function get_user_data( $type ) {
+
+		$this->set_user_data();
+
+		if ( ! $this->user_data || ! is_array( $this->user_data ) ) {
+			return false;
+		}
+
+		if ( in_array( $type, array( 'capital', 'country_flag', 'country_flag_emoji', 'calling_code' ), true ) ) {
+			return $this->user_data['location'][ $type ];
+		}
+
+		if ( strpos( $type, 'language_' ) !== false ) {
+
+			$split = explode( 'language_', $type );
+
+			if ( 'name' === $split[1] ) {
+				$split[1] = 'native';
+			}
+
+			return $this->user_data['location']['languages'][0][$split[1]];
+		}
+
+		if ( strpos( $type, 'time_zone_' ) !== false ) {
+
+			$split = explode( 'time_zone_', $type );
+			
+			if ( 'current_date' === $split[1] ) {
+				$date_time = $this->user_data['time_zone']['current_time'];
+				$date = date( "Y-m-d", strtotime( $date_time ) );
+				return $date;
+			}
+
+			if ( 'current_time' === $split[1] ) {
+				$date_time = $this->user_data['time_zone']['current_time'];
+				$time = date( "H:i:s", strtotime( $date_time ) );
+				return $time;
+			}
+
+			return $this->user_data['time_zone'][$split[1]];
+		}
+
+		if ( strpos( $type, 'currency_' ) !== false ) {
+
+			$split = explode( 'currency_', $type );
+
+			return $this->user_data['currency'][$split[1]];
+		}
+
+		if ( 'isp' === $type ) {
+			return $this->user_data['connection']['isp'];
+		}
+
+		return $this->user_data[ $type ];
+	}
+
+	/**
+	 * Gets user data
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	public function set_user_data() {
+
+		if ( ! empty( $this->user_data ) ) {
+			return;
+		}
+
+		if ( isset( $_SESSION['psp_user'] ) ) {
+			$this->user_data = json_decode( base64_decode( $_SESSION['psp_user'] ), true );
+			return;
+		}
+
+		$ip         = self::get_user_ip();
+		$ip         = '93.103.105.208';
+		$access_key = '0d7e441496e202a380a88a6796475b2f';
+
+		$ch = curl_init( 'http://api.ipstack.com/' . $ip . '?access_key=' . $access_key );
+		curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
+
+		$json = curl_exec( $ch );
+		curl_close($ch);
+
+		// Add user data to session so we don't use unnecessary requests
+		$_SESSION['psp_user'] = base64_encode( $json );
+		$this->user_data = json_decode( $json, true );
+	}
+
+	/**
+	 * Get user id
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return mixed
+	 */
+	public static function get_user_ip() {
+
+		if ( ! empty( $_SERVER['HTTP_CLIENT_IP'] ) ) {
+			return $_SERVER['HTTP_CLIENT_IP'];
+		} elseif ( ! empty( $_SERVER['HTTP_X_FORWARDED_FOR'] ) ) {
+			return $_SERVER['HTTP_X_FORWARDED_FOR'];
+		} else {
+			return $_SERVER['REMOTE_ADDR'];
+		}
+	}
+}
