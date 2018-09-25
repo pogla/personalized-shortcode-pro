@@ -38,7 +38,7 @@ define( 'PSP_VERSION', '1.0.0' );
 define( 'PSP_PREFIX', 'psp_' );
 define( 'PSP_NAME', 'Personalized Shortcode Pro' );
 define( 'PSP_MIN_PHP_VER', '5.6' );
-define( 'PSP_MIN_WP_VER', '3.8' );
+define( 'PSP_MIN_WP_VER', '4.2' );
 define( 'PSP_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'PSP_PLUGIN_PATH', dirname( __FILE__ ) );
 

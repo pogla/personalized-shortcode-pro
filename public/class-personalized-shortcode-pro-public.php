@@ -347,7 +347,7 @@ class Personalized_Shortcode_Pro_Public {
 
 		$response = wp_remote_get( 'http://api.ipstack.com/' . $ip . '?access_key=' . $access_key );
 
-		if ( 200 !== $response['response']['code'] ) {
+		if ( ! $response || 200 !== $response['response']['code'] ) {
 			return;
 		}
 
