@@ -212,8 +212,6 @@ class Personalized_Shortcode_Pro {
 
 		$plugin_admin = new Personalized_Shortcode_Pro_Admin( $this->get_plugin_name(), $this->get_version() );
 
-		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
-		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
 		$this->loader->add_action( 'plugin_action_links_' . basename( dirname( __DIR__ ) ) . '/personalized-shortcode-pro.php', $plugin_admin, 'plugin_action_links' );
 		$this->loader->add_action( 'admin_menu', $plugin_admin, 'add_submenu_page' );
 		$this->loader->add_action( 'admin_menu', $plugin_admin, 'save_fields' );
@@ -231,7 +229,6 @@ class Personalized_Shortcode_Pro {
 
 		$plugin_public = new Personalized_Shortcode_Pro_Public( $this->get_plugin_name(), $this->get_version() );
 
-		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
 
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'country_shortcode' );
