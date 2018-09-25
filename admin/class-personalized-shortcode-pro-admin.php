@@ -50,8 +50,7 @@ class Personalized_Shortcode_Pro_Admin {
 	public function __construct( $plugin_name, $version ) {
 
 		$this->plugin_name = $plugin_name;
-		$this->version = $version;
-
+		$this->version     = $version;
 	}
 
 	/**
@@ -70,51 +69,11 @@ class Personalized_Shortcode_Pro_Admin {
 	}
 
 	/**
-	 * Register the stylesheets for the admin area.
 	 *
-	 * @since    1.0.0
-	 */
-	public function enqueue_styles() {
-
-		/**
-		 * This function is provided for demonstration purposes only.
-		 *
-		 * An instance of this class should be passed to the run() function
-		 * defined in Personalized_Shortcode_Pro_Loader as all of the hooks are defined
-		 * in that particular class.
-		 *
-		 * The Personalized_Shortcode_Pro_Loader will then create the relationship
-		 * between the defined hooks and the functions defined in this
-		 * class.
-		 */
-
-		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/personalized-shortcode-pro-admin.css', array(), $this->version, 'all' );
-
-	}
-
-	/**
-	 * Register the JavaScript for the admin area.
+	 * Add a submenu under settings menu
 	 *
-	 * @since    1.0.0
+	 * @since   1.0.0
 	 */
-	public function enqueue_scripts() {
-
-		/**
-		 * This function is provided for demonstration purposes only.
-		 *
-		 * An instance of this class should be passed to the run() function
-		 * defined in Personalized_Shortcode_Pro_Loader as all of the hooks are defined
-		 * in that particular class.
-		 *
-		 * The Personalized_Shortcode_Pro_Loader will then create the relationship
-		 * between the defined hooks and the functions defined in this
-		 * class.
-		 */
-
-		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/personalized-shortcode-pro-admin.js', array( 'jquery' ), $this->version, false );
-
-	}
-
 	public function add_submenu_page() {
 
 		add_submenu_page(
@@ -125,26 +84,40 @@ class Personalized_Shortcode_Pro_Admin {
 			'psp-settings',
 			array( $this, 'add_submenu_page_callback' )
 		);
-
 	}
 
-	// Register our settings. Add the settings section, and settings fields
-	public function settings_register(){
-		register_setting(PSP_PREFIX . 'settings', PSP_PREFIX . 'option' );
-		add_settings_section(PSP_PREFIX . 'section', 'General Settings', '', 'options-general.php?page=psp-settings' );
-		add_settings_field( PSP_PREFIX . 'api_key',  'API Key',  array( $this, 'field_callback' ),  'options-general.php?page=psp-settings', PSP_PREFIX . 'section' );
+	/**
+	 * Register our settings. Add the settings section, and settings fields
+	 *
+	 * @since   1.0.0
+	 */
+	public function settings_register() {
+
+		register_setting( PSP_PREFIX . 'settings', PSP_PREFIX . 'option' );
+		add_settings_section( PSP_PREFIX . 'section', 'General Settings', '', 'options-general.php?page=psp-settings' );
+		add_settings_field( PSP_PREFIX . 'api_key', 'API Key', array( $this, 'api_text_field_callback' ), 'options-general.php?page=psp-settings', PSP_PREFIX . 'section' );
 	}
 
-	public function field_callback() {
+	/**
+	 * API text field callback
+	 *
+	 * @since 1.0.0
+	 */
+	public function api_text_field_callback() {
 		?>
-			<input name="<?php echo PSP_PREFIX . 'api_key'; ?>" type="text" style="min-width: 300px;" value="<?php echo get_option( PSP_PREFIX . 'api_key' ); ?>" />
+			<input name="<?php echo PSP_PREFIX . 'api_key'; // WPCS XSS ok ?>" type="text" style="min-width: 300px;" value="<?php echo get_option( PSP_PREFIX . 'api_key' ); // WPCS XSS ok. ?>" />
 		<?php
 	}
 
+	/**
+	 * Settings page
+	 *
+	 * @since 1.0.0
+	 */
 	public function add_submenu_page_callback() {
 		?>
 		<div class="wrap">
-			<h2><?php _e( 'Personalized Shortcode Pro', 'personalized-shortcode-pro' ); ?></h2>
+			<h2><?php esc_html_e( 'Personalized Shortcode Pro', 'personalized-shortcode-pro' ); ?></h2>
 			<form method='post'>
 				<?php
 				wp_nonce_field( PSP_PREFIX . 'settings_action', PSP_PREFIX . 'settings_nonce_field' );
@@ -153,19 +126,24 @@ class Personalized_Shortcode_Pro_Admin {
 				do_settings_sections( 'options-general.php?page=psp-settings' );
 				?>
 				<p class='submit'>
-					<input name='submit' type='submit' id='submit' class='button-primary' value='<?php _e("Save Changes") ?>' />
+					<input name='submit' type='submit' id='submit' class='button-primary' value='<?php esc_html_e( 'Save Changes' ); ?>' />
 				</p>
 			</form>
 		</div>
 		<?php
 	}
-	
+
+	/**
+	 * Save fields
+	 *
+	 * @since 1.0.0
+	 */
 	public function save_fields() {
-		
+
 		global $pagenow;
 
 		if ( isset( $_POST[ PSP_PREFIX . 'settings_nonce_field' ] ) && wp_verify_nonce( $_POST[ PSP_PREFIX . 'settings_nonce_field' ], PSP_PREFIX . 'settings_action' ) ) {
-			
+
 			if ( 'options-general.php' === $pagenow ) {
 
 				if ( isset( $_POST[ PSP_PREFIX . 'api_key' ] ) ) {

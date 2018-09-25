@@ -173,27 +173,12 @@ class Personalized_Shortcode_Pro {
 	 */
 	private function load_dependencies() {
 
-		/**
-		 * The class responsible for orchestrating the actions and filters of the
-		 * core plugin.
-		 */
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-personalized-shortcode-pro-loader.php';
 
-		/**
-		 * The class responsible for defining internationalization functionality
-		 * of the plugin.
-		 */
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-personalized-shortcode-pro-i18n.php';
 
-		/**
-		 * The class responsible for defining all actions that occur in the admin area.
-		 */
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-personalized-shortcode-pro-admin.php';
 
-		/**
-		 * The class responsible for defining all actions that occur in the public-facing
-		 * side of the site.
-		 */
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-personalized-shortcode-pro-public.php';
 
 		$this->loader = new Personalized_Shortcode_Pro_Loader();
@@ -214,7 +199,6 @@ class Personalized_Shortcode_Pro {
 		$plugin_i18n = new Personalized_Shortcode_Pro_i18n();
 
 		$this->loader->add_action( 'plugins_loaded', $plugin_i18n, 'load_plugin_textdomain' );
-
 	}
 
 	/**
@@ -234,7 +218,6 @@ class Personalized_Shortcode_Pro {
 		$this->loader->add_action( 'admin_menu', $plugin_admin, 'add_submenu_page' );
 		$this->loader->add_action( 'admin_menu', $plugin_admin, 'save_fields' );
 		$this->loader->add_action( 'admin_init', $plugin_admin, 'settings_register' );
-
 	}
 
 	/**
@@ -259,6 +242,8 @@ class Personalized_Shortcode_Pro {
 
 		$this->loader->add_action( 'wp_ajax_psp_conditional_content', $plugin_public, 'psp_conditional_content_ajax' );
 		$this->loader->add_action( 'wp_ajax_nopriv_psp_conditional_content', $plugin_public, 'psp_conditional_content_ajax' );
+
+		$this->loader->add_action( 'query_vars', $plugin_public, 'add_query_vars' );
 
 		add_shortcode( 'psp', array( $plugin_public, 'psp_shortcode' ) );
 		add_shortcode( 'psp-if', array( $plugin_public, 'psp_shortcode_conditional' ) );

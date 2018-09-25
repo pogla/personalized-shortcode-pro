@@ -69,31 +69,21 @@ class Personalized_Shortcode_Pro_Public {
 	public function __construct( $plugin_name, $version ) {
 
 		$this->plugin_name = $plugin_name;
-		$this->version = $version;
+		$this->version     = $version;
 
 	}
 
 	/**
-	 * Register the stylesheets for the public-facing side of the site.
+	 * Register query vars
 	 *
-	 * @since    1.0.0
+	 * @param $vars
+	 * @since 1.0.0
+	 *
+	 * @return array
 	 */
-	public function enqueue_styles() {
-
-		/**
-		 * This function is provided for demonstration purposes only.
-		 *
-		 * An instance of this class should be passed to the run() function
-		 * defined in Personalized_Shortcode_Pro_Loader as all of the hooks are defined
-		 * in that particular class.
-		 *
-		 * The Personalized_Shortcode_Pro_Loader will then create the relationship
-		 * between the defined hooks and the functions defined in this
-		 * class.
-		 */
-
-		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/personalized-shortcode-pro-public.css', array(), $this->version, 'all' );
-
+	public function add_query_vars( $vars ) {
+		$vars[] = 'psp_debug_ip';
+		return $vars;
 	}
 
 	/**
@@ -102,18 +92,6 @@ class Personalized_Shortcode_Pro_Public {
 	 * @since    1.0.0
 	 */
 	public function enqueue_scripts() {
-
-		/**
-		 * This function is provided for demonstration purposes only.
-		 *
-		 * An instance of this class should be passed to the run() function
-		 * defined in Personalized_Shortcode_Pro_Loader as all of the hooks are defined
-		 * in that particular class.
-		 *
-		 * The Personalized_Shortcode_Pro_Loader will then create the relationship
-		 * between the defined hooks and the functions defined in this
-		 * class.
-		 */
 
 		$ajax_nonce = wp_create_nonce( 'psp-public-js-nonce' );
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/personalized-shortcode-pro-public.js', array( 'jquery' ), $this->version, false );
@@ -129,6 +107,8 @@ class Personalized_Shortcode_Pro_Public {
 
 	/**
 	 * AJAX - Get user data. This makes sure it works also with caching plugins
+	 *
+	 * @since 1.0.0
 	 */
 	public function psp_get_user_data_ajax() {
 
@@ -150,6 +130,8 @@ class Personalized_Shortcode_Pro_Public {
 
 	/**
 	 * AJAX - Check conditionals
+	 *
+	 * @since 1.0.0
 	 */
 	public function psp_conditional_content_ajax() {
 
@@ -161,7 +143,7 @@ class Personalized_Shortcode_Pro_Public {
 
 		foreach ( $_POST['values'] as $item ) {
 
-			$val = $this->get_user_data( $item['type'] );
+			$val     = $this->get_user_data( $item['type'] );
 			$content = $item['content'];
 
 			if ( ! self::should_show_content( $item['values'], $val, $item['exclude'] ) ) {
@@ -179,15 +161,19 @@ class Personalized_Shortcode_Pro_Public {
 
 	/**
 	 * Start session if not started yet
+	 *
+	 * @since 1.0.0
 	 */
 	public function start_session() {
-		if( ! session_id() ) {
+		if ( ! session_id() ) {
 			session_start();
 		}
 	}
 
 	/**
 	 * Shortcode to show visitor data
+	 *
+	 * @since 1.0.0
 	 *
 	 * @param $atts
 	 *
@@ -196,8 +182,8 @@ class Personalized_Shortcode_Pro_Public {
 	public function psp_shortcode( $atts ) {
 
 		$atts = shortcode_atts( array(
-			'type'       => '',
-			'default'    => '',
+			'type'    => '',
+			'default' => '',
 		), $atts );
 
 		if ( ! $atts['type'] ) {
@@ -302,33 +288,33 @@ class Personalized_Shortcode_Pro_Public {
 				$split[1] = 'native';
 			}
 
-			return $this->user_data['location']['languages'][0][$split[1]];
+			return $this->user_data['location']['languages'][0][ $split[1] ];
 		}
 
 		if ( strpos( $type, 'time_zone_' ) !== false ) {
 
 			$split = explode( 'time_zone_', $type );
-			
+
 			if ( 'current_date' === $split[1] ) {
 				$date_time = $this->user_data['time_zone']['current_time'];
-				$date = date( "Y-m-d", strtotime( $date_time ) );
+				$date      = date( 'Y-m-d', strtotime( $date_time ) );
 				return $date;
 			}
 
 			if ( 'current_time' === $split[1] ) {
 				$date_time = $this->user_data['time_zone']['current_time'];
-				$time = date( "H:i:s", strtotime( $date_time ) );
+				$time      = date( 'H:i:s', strtotime( $date_time ) );
 				return $time;
 			}
 
-			return $this->user_data['time_zone'][$split[1]];
+			return $this->user_data['time_zone'][ $split[1] ];
 		}
 
 		if ( strpos( $type, 'currency_' ) !== false ) {
 
 			$split = explode( 'currency_', $type );
 
-			return $this->user_data['currency'][$split[1]];
+			return $this->user_data['currency'][ $split[1] ];
 		}
 
 		if ( 'isp' === $type ) {
@@ -351,24 +337,35 @@ class Personalized_Shortcode_Pro_Public {
 			return;
 		}
 
-		if ( isset( $_SESSION['psp_user'] ) ) {
+		if ( isset( $_SESSION['psp_user'] ) && ! get_query_var( 'psp_debug_ip' ) ) {
 			$this->user_data = json_decode( base64_decode( $_SESSION['psp_user'] ), true );
 			return;
 		}
 
 		$ip         = self::get_user_ip();
-		$ip         = '93.103.105.208';
-		$access_key = '0d7e441496e202a380a88a6796475b2f';
+		$access_key = get_option( PSP_PREFIX . 'api_key' );
 
-		$ch = curl_init( 'http://api.ipstack.com/' . $ip . '?access_key=' . $access_key );
-		curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
+		$response = wp_remote_get( 'http://api.ipstack.com/' . $ip . '?access_key=' . $access_key );
 
-		$json = curl_exec( $ch );
-		curl_close($ch);
+		if ( 200 !== $response['response']['code'] ) {
+			return;
+		}
+
+		if ( ! is_a( $response['http_response'], 'WP_HTTP_Requests_Response' ) ) {
+			return;
+		}
+
+		$response_obj = $response['http_response']->get_response_object();
+
+		if ( ! $response_obj->success ) {
+			return;
+		}
+
+		$data = json_decode( $response['body'], true );
 
 		// Add user data to session so we don't use unnecessary requests
-		$_SESSION['psp_user'] = base64_encode( $json );
-		$this->user_data = json_decode( $json, true );
+		$_SESSION['psp_user'] = base64_encode( $response['body'] );
+		$this->user_data      = $data;
 	}
 
 	/**
@@ -379,6 +376,12 @@ class Personalized_Shortcode_Pro_Public {
 	 * @return mixed
 	 */
 	public static function get_user_ip() {
+
+		$debug_ip = get_query_var( 'psp_debug_ip' );
+
+		if ( $debug_ip ) {
+			return $debug_ip;
+		}
 
 		if ( ! empty( $_SERVER['HTTP_CLIENT_IP'] ) ) {
 			return $_SERVER['HTTP_CLIENT_IP'];

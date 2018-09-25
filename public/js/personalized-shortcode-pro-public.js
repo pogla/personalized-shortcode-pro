@@ -7,27 +7,30 @@ jQuery( document ).ready(
 			valuesToCheck.push( $( this ).data( 'psp-type' ) );
 		});
 
-		var data = {
-			action: 'psp_get_user_data',
-			values: valuesToCheck,
-			security: wp_vars.security
-		};
+		if ( valuesToCheck.length > 0 ) {
 
-		$.post( wp_vars.ajaxurl, data, function( response ) {
+			var data = {
+				action: 'psp_get_user_data',
+				values: valuesToCheck,
+				security: wp_vars.security
+			};
 
-			if ( response.data.length ) {
+			$.post( wp_vars.ajaxurl, data, function( response ) {
 
-				$.each( response.data, function( i, item ){
+				if ( response.data.length ) {
 
-					if ( item.value ) {
+					$.each( response.data, function( i, item ){
 
-						$( '[data-psp-type="' + item.type + '"' ).each( function( i, el ) {
-							$( el ).text( item.value );
-						});
-					}
-				});
-			}
-		} );
+						if ( item.value ) {
+
+							$( '[data-psp-type="' + item.type + '"' ).each( function( i, el ) {
+								$( el ).text( item.value );
+							});
+						}
+					});
+				}
+			} );
+		}
 
 		$( '.psp-conditional' ).each( function( i, item ) {
 			conditionalValuesToCheck.push( {
@@ -39,26 +42,30 @@ jQuery( document ).ready(
 			} );
 		});
 
-		var data = {
-			action: 'psp_conditional_content',
-			values: conditionalValuesToCheck,
-			security: wp_vars.security
-		};
+		if ( conditionalValuesToCheck.length > 0 ) {
 
-		$.post( wp_vars.ajaxurl, data, function( response ) {
+			var data = {
+				action: 'psp_conditional_content',
+				values: conditionalValuesToCheck,
+				security: wp_vars.security
+			};
 
-			if ( response.data.length ) {
 
-				$.each( response.data, function( i, item ){
+			$.post( wp_vars.ajaxurl, data, function( response ) {
 
-					if ( item.id ) {
+				if ( response.data.length ) {
 
-						$( '[data-psp-id="' + item.id + '"' ).each( function( i, el ) {
-							$( el ).text( item.content );
-						});
-					}
-				});
-			}
-		} );
+					$.each( response.data, function( i, item ){
+
+						if ( item.id ) {
+
+							$( '[data-psp-id="' + item.id + '"' ).each( function( i, el ) {
+								$( el ).text( item.content );
+							});
+						}
+					});
+				}
+			} );
+		}
 	}
 );
