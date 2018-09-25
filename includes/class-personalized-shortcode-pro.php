@@ -230,16 +230,11 @@ class Personalized_Shortcode_Pro {
 		$plugin_public = new Personalized_Shortcode_Pro_Public( $this->get_plugin_name(), $this->get_version() );
 
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
-
-		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'country_shortcode' );
 		$this->loader->add_action( 'init', $plugin_public, 'start_session' );
-
 		$this->loader->add_action( 'wp_ajax_psp_get_user_data', $plugin_public, 'psp_get_user_data_ajax' );
 		$this->loader->add_action( 'wp_ajax_nopriv_psp_get_user_data', $plugin_public, 'psp_get_user_data_ajax' );
-
 		$this->loader->add_action( 'wp_ajax_psp_conditional_content', $plugin_public, 'psp_conditional_content_ajax' );
 		$this->loader->add_action( 'wp_ajax_nopriv_psp_conditional_content', $plugin_public, 'psp_conditional_content_ajax' );
-
 		$this->loader->add_action( 'query_vars', $plugin_public, 'add_query_vars' );
 
 		add_shortcode( 'psp', array( $plugin_public, 'psp_shortcode' ) );
