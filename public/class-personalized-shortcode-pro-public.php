@@ -427,6 +427,15 @@ class Personalized_Shortcode_Pro_Public {
 			}
 		}
 
+		if ( 'browser_family' === $type ) {
+
+			$browser_family = \DeviceDetector\Parser\Client\Browser::getBrowserFamily( $this->user_info->getClient( 'short_name' ) );
+
+			if ( false !== $browser_family ) {
+				return $browser_family;
+			}
+		}
+
 		return '';
 	}
 
