@@ -21,6 +21,8 @@
  * @author     Matic Pogladič <matic.pogladic@gmail.com>
  */
 
+use DeviceDetector\DeviceDetector;
+
 class Personalized_Shortcode_Pro_Public {
 
 	/**
@@ -58,6 +60,15 @@ class Personalized_Shortcode_Pro_Public {
 	 * @var      string    $incremental_id    int.
 	 */
 	private $incremental_id = 1;
+
+	/**
+	 * Cache user device info
+	 *
+	 * @since    1.0.0
+	 * @access   private
+	 * @var      string    $user_info    int.
+	 */
+	private $user_info = false;
 
 	/**
 	 * Initialize the class and set its properties.
@@ -321,7 +332,74 @@ class Personalized_Shortcode_Pro_Public {
 			return $this->user_data['connection']['isp'];
 		}
 
+		if ( in_array( $type, array( 'browser', 'os', 'device_brand', 'device_model', 'device_name' ), true ) ) {
+			return $this->get_device_info( $type );
+		}
+
 		return $this->user_data[ $type ];
+	}
+
+	/**
+	 * Get user agent info
+	 *
+	 * @param $type
+	 *
+	 * @return string
+	 */
+	private function get_device_info( $type ) {
+
+		if ( ! $this->user_info ) {
+			$user_agent      = $_SERVER['HTTP_USER_AGENT'];
+			$this->user_info = new DeviceDetector( $user_agent );
+			$this->user_info->parse();
+		}
+
+		if ( 'browser' === $type ) {
+
+			$client_info = $this->user_info->getClient();
+
+			if ( isset( $client_info['name'] ) && $client_info['name'] ) {
+				return $client_info['name'];
+			}
+		}
+
+		if ( 'os' === $type ) {
+
+			$os_info = $this->user_info->getOs();
+
+			if ( isset( $os_info['name'] ) && $os_info['name'] ) {
+				return $os_info['name'];
+			}
+		}
+
+		if ( 'device_brand' === $type ) {
+
+			$brand_info = $this->user_info->getBrandName();
+
+			if ( isset( $brand_info ) && $brand_info ) {
+				return $brand_info;
+			}
+		}
+
+		if ( 'device_model' === $type ) {
+
+			$device_model = $this->user_info->getModel();
+
+			if ( isset( $device_model ) && $device_model ) {
+				return $device_model;
+			}
+		}
+
+		if ( 'device_name' === $type ) {
+
+			$device_info = $this->user_info->getDeviceName();
+
+			if ( isset( $device_info ) && $device_info ) {
+				return $device_info;
+			}
+		}
+
+		return '';
 	}
 
 	/**
@@ -390,5 +468,31 @@ class Personalized_Shortcode_Pro_Public {
 		} else {
 			return $_SERVER['REMOTE_ADDR'];
 		}
+	}
+
+	/**
+	 * Enables shortcodes in titles
+	 *
+	 * @since 1.0.0
+	 * @param $title
+	 *
+	 * @return string
+	 */
+	public function enable_title_shortcodes( $title ) {
+		return do_shortcode( $title );
+	}
+
+	/**
+	 * Prevent shortcode output in title tag in head of the page
+	 *
+	 * @since 1.0.0
+	 * @param $title
+	 *
+	 * @return mixed
+	 */
+	public function document_title_parts( $title ) {
+
+		$title['title'] = wp_strip_all_tags( strip_shortcodes( $title['title'] ) );
+		return $title;
 	}
 }

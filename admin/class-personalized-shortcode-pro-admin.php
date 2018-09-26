@@ -76,8 +76,7 @@ class Personalized_Shortcode_Pro_Admin {
 	 */
 	public function add_submenu_page() {
 
-		add_submenu_page(
-			'options-general.php',
+		add_options_page(
 			'Personalized Shortcode',
 			'Personalized Shortcode',
 			'manage_options',
@@ -93,9 +92,13 @@ class Personalized_Shortcode_Pro_Admin {
 	 */
 	public function settings_register() {
 
-		register_setting( PSP_PREFIX . 'settings', PSP_PREFIX . 'option' );
-		add_settings_section( PSP_PREFIX . 'section', 'General Settings', '', 'options-general.php?page=psp-settings' );
-		add_settings_field( PSP_PREFIX . 'api_key', 'API Key', array( $this, 'api_text_field_callback' ), 'options-general.php?page=psp-settings', PSP_PREFIX . 'section' );
+		add_settings_section( PSP_PREFIX . 'section', __( 'General Settings', 'personalized-shortcode-pro' ), null, 'psp-settings' );
+
+		add_settings_field( PSP_PREFIX . 'api_key', __( 'API Key', 'personalized-shortcode-pro' ), array( $this, 'api_text_field_callback' ), 'psp-settings', PSP_PREFIX . 'section' );
+		add_settings_field( PSP_PREFIX . 'enable_titles', __( 'Enable Shortcodes in Titles', 'personalized-shortcode-pro' ), array( $this, 'shortcode_title_field_callback' ), 'psp-settings', PSP_PREFIX . 'section' );
+
+		register_setting( PSP_PREFIX . 'section', PSP_PREFIX . 'api_key' );
+		register_setting( PSP_PREFIX . 'section', PSP_PREFIX . 'enable_titles' );
 	}
 
 	/**
@@ -105,7 +108,18 @@ class Personalized_Shortcode_Pro_Admin {
 	 */
 	public function api_text_field_callback() {
 		?>
-			<input name="<?php echo PSP_PREFIX . 'api_key'; // WPCS XSS ok ?>" type="text" style="min-width: 300px;" value="<?php echo get_option( PSP_PREFIX . 'api_key' ); // WPCS XSS ok. ?>" />
+			<input name="<?php echo PSP_PREFIX . 'api_key'; // WPCS XSS ok ?>" id="<?php echo PSP_PREFIX . 'api_key'; // WPCS XSS ok ?>" type="text" style="min-width: 300px;" value="<?php echo get_option( PSP_PREFIX . 'api_key' ); // WPCS XSS ok. ?>" />
+		<?php
+	}
+
+	/**
+	 * API text field callback
+	 *
+	 * @since 1.0.0
+	 */
+	public function shortcode_title_field_callback() {
+		?>
+			<input value='1' id="<?php echo PSP_PREFIX . 'enable_titles'; // WPCS XSS ok ?>" name="<?php echo PSP_PREFIX . 'enable_titles'; // WPCS XSS ok ?>" type="checkbox" <?php checked( 1, get_option( PSP_PREFIX . 'enable_titles' ), true ); ?> />
 		<?php
 	}
 
@@ -118,38 +132,25 @@ class Personalized_Shortcode_Pro_Admin {
 		?>
 		<div class="wrap">
 			<h2><?php esc_html_e( 'Personalized Shortcode Pro', 'personalized-shortcode-pro' ); ?></h2>
-			<form method='post'>
+			<form method='post' action='options.php'>
 				<?php
-				wp_nonce_field( PSP_PREFIX . 'settings_action', PSP_PREFIX . 'settings_nonce_field' );
+				//wp_nonce_field( PSP_PREFIX . 'settings_action', PSP_PREFIX . 'settings_nonce_field' );
 				/* 'option_group' must match 'option_group' from register_setting call */
-				settings_fields( PSP_PREFIX . '_settings' );
-				do_settings_sections( 'options-general.php?page=psp-settings' );
+				settings_fields( PSP_PREFIX . 'section' );
+				do_settings_sections( 'psp-settings' );
+				submit_button();
 				?>
-				<p class='submit'>
-					<input name='submit' type='submit' id='submit' class='button-primary' value='<?php esc_html_e( 'Save Changes' ); ?>' />
-				</p>
 			</form>
 		</div>
 		<?php
 	}
 
-	/**
-	 * Save fields
-	 *
-	 * @since 1.0.0
-	 */
-	public function save_fields() {
+	public function get_sample_permalink( $permalink, $post_id, $title, $name, $post ) {
 
-		global $pagenow;
-
-		if ( isset( $_POST[ PSP_PREFIX . 'settings_nonce_field' ] ) && wp_verify_nonce( $_POST[ PSP_PREFIX . 'settings_nonce_field' ], PSP_PREFIX . 'settings_action' ) ) {
-
-			if ( 'options-general.php' === $pagenow ) {
-
-				if ( isset( $_POST[ PSP_PREFIX . 'api_key' ] ) ) {
-					update_option( PSP_PREFIX . 'api_key', $_POST[ PSP_PREFIX . 'api_key' ] );
-				}
-			}
+		if ( sanitize_title( $post->post_title ) === $permalink ) {
+			return sanitize_title( strip_shortcodes( $post->post_title ) );
 		}
+
+		return $permalink;
 	}
 }

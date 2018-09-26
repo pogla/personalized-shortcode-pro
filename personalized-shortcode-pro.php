@@ -54,6 +54,8 @@ function psp_load_plugin() {
 
 	if ( $plugin::check() ) {
 
+		require plugin_dir_path( __FILE__ ) . 'vendor/autoload.php';
+
 		$plugin->init();
 
 		register_activation_hook( __FILE__, 'activate_personalized_shortcode_pro' );

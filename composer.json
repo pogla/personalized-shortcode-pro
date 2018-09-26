@@ -1,0 +1,12 @@
+{
+    "name": "pogla/personalized-shortcode-pro",
+    "require": {
+        "piwik/device-detector": "^3.11"
+    },
+    "authors": [
+        {
+            "name": "pogla",
+            "email": "matic.pogladic@gmail.com"
+        }
+    ]
+}
