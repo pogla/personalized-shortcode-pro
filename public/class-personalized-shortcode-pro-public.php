@@ -360,7 +360,7 @@ class Personalized_Shortcode_Pro_Public {
 			return $this->user_data['connection']['isp'];
 		}
 
-		if ( in_array( $type, array( 'browser', 'os', 'device_brand', 'device_model', 'device_type' ), true ) ) {
+		if ( in_array( $type, array( 'browser', 'os', 'device_brand', 'device_model', 'device_type', 'browser_family' ), true ) ) {
 			return $this->get_device_info( $type );
 		}
 
