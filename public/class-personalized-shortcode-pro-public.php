@@ -193,8 +193,10 @@ class Personalized_Shortcode_Pro_Public {
 	public function psp_shortcode( $atts ) {
 
 		$atts = shortcode_atts( array(
-			'type'    => '',
-			'default' => '',
+			'type'      => '',
+			'default'   => '',
+			'modifiers' => '',
+			'styles'    => '',
 		), $atts );
 
 		if ( ! $atts['type'] ) {
@@ -207,7 +209,33 @@ class Personalized_Shortcode_Pro_Public {
 			$value = $atts['default'];
 		}
 
-		return "<span class='psp-type' data-psp-type='{$atts['type']}'>{$value}</span>";
+		$styles = $atts['styles'];
+
+		if ( ! empty( $atts['modifiers'] ) ) {
+
+			$modifiers = explode( ',', $atts['modifiers'] );
+
+			foreach ( $modifiers as $modifier ) {
+
+				if ( 'uppercase' === $modifier ) {
+					$styles .= 'text-transform: uppercase;';
+				}
+
+				if ( 'lowercase' === $modifier ) {
+					$styles .= 'text-transform: lowercase;';
+				}
+
+				if ( 'bold' === $modifier ) {
+					$styles .= 'font-weight: bold;';
+				}
+
+				if ( 'italics' === $modifier ) {
+					$styles .= 'font-style: italic;';
+				}
+			}
+		}
+
+		return "<span class='psp-type' style='{$styles}' data-psp-type='{$atts['type']}'>{$value}</span>";
 	}
 
 	/**
