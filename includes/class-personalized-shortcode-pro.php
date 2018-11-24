@@ -217,7 +217,8 @@ class Personalized_Shortcode_Pro {
 		$this->loader->add_action( 'admin_init', $plugin_admin, 'settings_register' );
 
 		if ( '1' === get_option( PSP_PREFIX . 'enable_titles' ) ) {
-			$this->loader->add_action( 'get_sample_permalink', $plugin_admin, 'get_sample_permalink', 1, 5 );
+			$this->loader->add_action( 'add_meta_boxes', $plugin_admin, 'add_meta_boxes' );
+			$this->loader->add_action( 'save_post', $plugin_admin, 'save_custom_title_data' );
 		}
 	}
 
@@ -244,8 +245,7 @@ class Personalized_Shortcode_Pro {
 		add_shortcode( 'psp-if', array( $plugin_public, 'psp_shortcode_conditional' ) );
 
 		if ( '1' === get_option( PSP_PREFIX . 'enable_titles' ) ) {
-			$this->loader->add_filter( 'the_title', $plugin_public, 'enable_title_shortcodes' );
-			$this->loader->add_filter( 'document_title_parts', $plugin_public, 'document_title_parts' );
+			$this->loader->add_filter( 'the_title', $plugin_public, 'add_shortcodes_to_title' );
 		}
 	}
 

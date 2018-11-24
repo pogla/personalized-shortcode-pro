@@ -41,6 +41,47 @@ define( 'PSP_MIN_PHP_VER', '5.6' );
 define( 'PSP_MIN_WP_VER', '4.2' );
 define( 'PSP_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'PSP_PLUGIN_PATH', dirname( __FILE__ ) );
+define( 'PSP_PLUGIN_ID', '2733' );
+
+// Create a helper function for easy SDK access.
+function psp_fs() {
+	global $psp_fs;
+
+	if ( ! isset( $psp_fs ) ) {
+
+		// Include Freemius SDK.
+		require_once plugin_dir_path( __FILE__ ) . 'vendor/freemius/start.php';
+
+		$psp_fs = fs_dynamic_init( array(
+			'id'                  => PSP_PLUGIN_ID,
+			'slug'                => 'personalized-shortcode-pro',
+			'type'                => 'plugin',
+			'public_key'          => 'pk_f01ac71c1c3637c7d5dbfaf1bdc14',
+			'is_premium'          => true,
+			'is_premium_only'     => true,
+			'has_premium_version' => true,
+			'has_addons'          => false,
+			'has_paid_plans'      => true,
+			'is_org_compliant'    => false,
+			'menu'                => array(
+				'slug'    => 'psp-settings',
+				'contact' => false,
+				'support' => false,
+				'parent'  => array(
+					'slug' => 'options-general.php',
+				),
+			),
+			'secret_key'       => 'sk_@6r>}Pe0d{d!VEG{HzQ:mTJ~m1q_a',
+		) );
+	}
+
+	return $psp_fs;
+}
+
+// Init Freemius.
+psp_fs();
+// Signal that SDK was initiated.
+do_action( 'psp_fs_loaded' );
 
 /**
  * The core plugin class that is used to define internationalization,

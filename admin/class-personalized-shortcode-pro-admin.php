@@ -94,7 +94,6 @@ class Personalized_Shortcode_Pro_Admin {
 
 		add_settings_section( PSP_PREFIX . 'section', __( 'General Settings', 'personalized-shortcode-pro' ), null, 'psp-settings' );
 
-		add_settings_field( PSP_PREFIX . 'api_key', __( 'API Key', 'personalized-shortcode-pro' ), array( $this, 'api_text_field_callback' ), 'psp-settings', PSP_PREFIX . 'section' );
 		add_settings_field( PSP_PREFIX . 'enable_titles', __( 'Enable Shortcodes in Titles', 'personalized-shortcode-pro' ), array( $this, 'shortcode_title_field_callback' ), 'psp-settings', PSP_PREFIX . 'section' );
 
 		register_setting( PSP_PREFIX . 'section', PSP_PREFIX . 'api_key' );
@@ -106,21 +105,49 @@ class Personalized_Shortcode_Pro_Admin {
 	 *
 	 * @since 1.0.0
 	 */
-	public function api_text_field_callback() {
+	public function shortcode_title_field_callback() {
 		?>
-			<input name="<?php echo PSP_PREFIX . 'api_key'; // WPCS XSS ok ?>" id="<?php echo PSP_PREFIX . 'api_key'; // WPCS XSS ok ?>" type="text" style="min-width: 300px;" value="<?php echo get_option( PSP_PREFIX . 'api_key' ); // WPCS XSS ok. ?>" />
+		<input value='1' id="<?php echo PSP_PREFIX . 'enable_titles'; // WPCS XSS ok ?>" name="<?php echo PSP_PREFIX . 'enable_titles'; // WPCS XSS ok ?>" type="checkbox" <?php checked( 1, get_option( PSP_PREFIX . 'enable_titles' ), true ); ?> />
 		<?php
 	}
 
+
 	/**
-	 * API text field callback
+	 * Add meta box
 	 *
 	 * @since 1.0.0
 	 */
-	public function shortcode_title_field_callback() {
+	public function add_meta_boxes() {
+
+		$screens = apply_filters( 'psp_post_types_titles', array( 'post', 'page', 'product' ) );
+		foreach ( $screens as $screen ) {
+			add_meta_box(
+				PSP_PREFIX . 'shortcodes_title',
+				'Title with shortcodes',
+				array( $this, 'custom_title_meta_box_callback' ),
+				$screen,
+				'advanced',
+				'high'
+			);
+		}
+	}
+
+	public function custom_title_meta_box_callback( $post ) {
+		$title_id = PSP_PREFIX . 'custom_title';
+		$title    = get_post_meta( $post->ID, '_' . $title_id, true );
 		?>
-			<input value='1' id="<?php echo PSP_PREFIX . 'enable_titles'; // WPCS XSS ok ?>" name="<?php echo PSP_PREFIX . 'enable_titles'; // WPCS XSS ok ?>" type="checkbox" <?php checked( 1, get_option( PSP_PREFIX . 'enable_titles' ), true ); ?> />
+		<label for="<?php echo $title_id; ?>">Custom title with shortcodes</label>
+		<textarea name="<?php echo $title_id; ?>" id="<?php echo $title_id; ?>" style="width: 100%;"><?php echo $title; ?></textarea>
 		<?php
+	}
+
+	public function save_custom_title_data( $post_id ) {
+		$title_id = PSP_PREFIX . 'custom_title';
+		update_post_meta(
+			$post_id,
+			'_' . $title_id,
+			$_POST[ $title_id ]
+		);
 	}
 
 	/**

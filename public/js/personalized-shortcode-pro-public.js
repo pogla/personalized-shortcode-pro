@@ -17,7 +17,7 @@ jQuery( document ).ready(
 
 			$.post( wp_vars.ajaxurl, data, function( response ) {
 
-				if ( response.data.length ) {
+				if ( response.data && response.data.length ) {
 
 					$.each( response.data, function( i, item ){
 
@@ -53,7 +53,7 @@ jQuery( document ).ready(
 
 			$.post( wp_vars.ajaxurl, data, function( response ) {
 
-				if ( response.data.length ) {
+				if ( response.data && response.data.length ) {
 
 					$.each( response.data, function( i, item ){
 

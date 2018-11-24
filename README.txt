@@ -1,4 +1,4 @@
-=== Plugin Name ===
+=== Personalized Shortcodes Pro ===
 Contributors: poglaa
 Donate link: https://maticpogladic.com/
 Tags: geoip, shortcodes, conditional content

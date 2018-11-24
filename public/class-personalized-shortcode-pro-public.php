@@ -235,7 +235,7 @@ class Personalized_Shortcode_Pro_Public {
 			}
 		}
 
-		return "<span class='psp-type' style='{$styles}' data-psp-type='{$atts['type']}'>{$value}</span>";
+		return "<span class='psp-type' style='{$styles}' data-psp-type='{$value}'>{$value}</span>";
 	}
 
 	/**
@@ -310,13 +310,19 @@ class Personalized_Shortcode_Pro_Public {
 	public function get_user_data( $type ) {
 
 		$this->set_user_data();
+//		echo '<pre>' . var_export($this->user_data, true) . '</pre>';die();
 
 		if ( ! $this->user_data || ! is_array( $this->user_data ) ) {
 			return false;
 		}
 
 		if ( in_array( $type, array( 'capital', 'country_flag', 'country_flag_emoji', 'calling_code' ), true ) ) {
-			return $this->user_data['location'][ $type ];
+
+			if ( isset( $this->user_data['location'][ $type ] ) ) {
+				return $this->user_data['location'][ $type ];
+			} else {
+				return false;
+			}
 		}
 
 		if ( strpos( $type, 'language_' ) !== false ) {
@@ -327,7 +333,11 @@ class Personalized_Shortcode_Pro_Public {
 				$split[1] = 'native';
 			}
 
-			return $this->user_data['location']['languages'][0][ $split[1] ];
+			if ( isset( $this->user_data['location']['languages'][0][ $split[1] ] ) ) {
+				return $this->user_data['location']['languages'][0][ $split[1] ];
+			} else {
+				return false;
+			}
 		}
 
 		if ( strpos( $type, 'time_zone_' ) !== false ) {
@@ -335,15 +345,25 @@ class Personalized_Shortcode_Pro_Public {
 			$split = explode( 'time_zone_', $type );
 
 			if ( 'current_date' === $split[1] ) {
-				$date_time = $this->user_data['time_zone']['current_time'];
-				$date      = date( 'Y-m-d', strtotime( $date_time ) );
-				return $date;
+
+				if ( isset( $this->user_data['time_zone']['current_time'] ) ) {
+					$date_time = $this->user_data['time_zone']['current_time'];
+					$date      = date( 'Y-m-d', strtotime( $date_time ) );
+					return $date;
+				} else {
+					return false;
+				}
 			}
 
 			if ( 'current_time' === $split[1] ) {
-				$date_time = $this->user_data['time_zone']['current_time'];
-				$time      = date( 'H:i:s', strtotime( $date_time ) );
-				return $time;
+
+				if ( isset( $this->user_data['time_zone']['current_time'] ) ) {
+					$date_time = $this->user_data['time_zone']['current_time'];
+					$time      = date( 'H:i:s', strtotime( $date_time ) );
+					return $time;
+				} else {
+					return false;
+				}
 			}
 
 			return $this->user_data['time_zone'][ $split[1] ];
@@ -353,11 +373,20 @@ class Personalized_Shortcode_Pro_Public {
 
 			$split = explode( 'currency_', $type );
 
-			return $this->user_data['currency'][ $split[1] ];
+			if ( isset( $this->user_data['currency'][ $split[1] ] ) ) {
+				return $this->user_data['currency'][ $split[1] ];
+			} else {
+				return false;
+			}
 		}
 
 		if ( 'isp' === $type ) {
-			return $this->user_data['connection']['isp'];
+
+			if ( isset( $this->user_data['connection']['isp'] ) ) {
+				return $this->user_data['connection']['isp'];
+			} else {
+				return false;
+			}
 		}
 
 		if ( in_array( $type, array( 'browser', 'os', 'device_brand', 'device_model', 'device_type', 'browser_family' ), true ) ) {
@@ -457,30 +486,34 @@ class Personalized_Shortcode_Pro_Public {
 			return;
 		}
 
-		$ip         = self::get_user_ip();
-		$access_key = get_option( PSP_PREFIX . 'api_key' );
+		$ip = self::get_user_ip();
 
-		$response = wp_remote_get( 'http://api.ipstack.com/' . $ip . '?access_key=' . $access_key );
+		$fs_options = get_option( 'fs_accounts' );
 
-		if ( ! $response || 200 !== $response['response']['code'] ) {
+		if ( ! $fs_options || ! $fs_options['all_licenses'] || ! $fs_options['all_licenses'][ PSP_PLUGIN_ID ] ) {
 			return;
 		}
 
-		if ( ! is_a( $response['http_response'], 'WP_HTTP_Requests_Response' ) ) {
-			return;
+		foreach ( $fs_options['all_licenses'][PSP_PLUGIN_ID] as $license ) {
+		
+			if ( ( $license->activated || $license->activated_local ) && ! $license->is_cancelled && time() < strtotime( $license->expiration ) ) {
+
+				$key = $license->secret_key;
+
+				// TODO: Needs to change to production domain
+				$url      = 'https://convertking.maticpogladic.com';
+				$response = wp_remote_get( $url . '/wp-json/ck/v1/ip-data?ip=' . $ip . '&api=' . base64_encode( $key ) );
+
+				if ( ! isset( $response['response']['code'] ) || 200 !== $response['response']['code'] || ! $response['body'] || ! $response['body']['data'] ) {
+					return;
+				}
+
+				// Add user data to session so we don't use unnecessary requests
+				$_SESSION['psp_user'] = base64_encode( $response['body']['data'] );
+				$data                 = json_decode( $response['body'], true );
+				$this->user_data      = $data['data'];
+			}
 		}
-
-		$response_obj = $response['http_response']->get_response_object();
-
-		if ( ! $response_obj->success ) {
-			return;
-		}
-
-		$data = json_decode( $response['body'], true );
-
-		// Add user data to session so we don't use unnecessary requests
-		$_SESSION['psp_user'] = base64_encode( $response['body'] );
-		$this->user_data      = $data;
 	}
 
 	/**
@@ -507,29 +540,23 @@ class Personalized_Shortcode_Pro_Public {
 		}
 	}
 
-	/**
-	 * Enables shortcodes in titles
-	 *
-	 * @since 1.0.0
-	 * @param $title
-	 *
-	 * @return string
-	 */
-	public function enable_title_shortcodes( $title ) {
-		return do_shortcode( $title );
-	}
+	public function add_shortcodes_to_title( $title ) {
 
-	/**
-	 * Prevent shortcode output in title tag in head of the page
-	 *
-	 * @since 1.0.0
-	 * @param $title
-	 *
-	 * @return mixed
-	 */
-	public function document_title_parts( $title ) {
+		//Return new title if called inside loop
+		if ( in_the_loop() && is_main_query() ) {
 
-		$title['title'] = wp_strip_all_tags( strip_shortcodes( $title['title'] ) );
+			global $post;
+
+			if ( $post->ID ) {
+				$title_id = PSP_PREFIX . 'custom_title';
+				$title    = get_post_meta( $post->ID, '_' . $title_id, true );
+
+				if ( $title ) {
+					return do_shortcode( $title );
+				}
+			}
+		}
+
 		return $title;
 	}
 }

@@ -53,17 +53,17 @@
     },
     {
         "name": "piwik/device-detector",
-        "version": "3.11.1",
-        "version_normalized": "3.11.1.0",
+        "version": "3.11.3",
+        "version_normalized": "3.11.3.0",
         "source": {
             "type": "git",
             "url": "https://github.com/matomo-org/device-detector.git",
-            "reference": "0ec14d28cbf71c48b21697e65b892cfd8c3ca519"
+            "reference": "9b7a5f837938c38f1131d6042b859144053ac45c"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/matomo-org/device-detector/zipball/0ec14d28cbf71c48b21697e65b892cfd8c3ca519",
-            "reference": "0ec14d28cbf71c48b21697e65b892cfd8c3ca519",
+            "url": "https://api.github.com/repos/matomo-org/device-detector/zipball/9b7a5f837938c38f1131d6042b859144053ac45c",
+            "reference": "9b7a5f837938c38f1131d6042b859144053ac45c",
             "shasum": ""
         },
         "require": {
@@ -80,7 +80,7 @@
         "suggest": {
             "doctrine/cache": "Can directly be used for caching purpose"
         },
-        "time": "2018-08-10T18:28:32+00:00",
+        "time": "2018-11-11T14:41:22+00:00",
         "type": "library",
         "installation-source": "dist",
         "autoload": {
