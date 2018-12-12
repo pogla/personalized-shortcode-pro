@@ -500,18 +500,27 @@ class Personalized_Shortcode_Pro_Public {
 
 				$key = $license->secret_key;
 
-				// TODO: Needs to change to production domain
-				$url      = 'https://convertking.maticpogladic.com';
-				$response = wp_remote_get( $url . '/wp-json/ck/v1/ip-data?ip=' . $ip . '&api=' . base64_encode( $key ) );
+				$url  = 'https://api.convertking.io';
+				$url .= '/wp-json/ck/v1/ip-data?ip=' . $ip . '&api=' . base64_encode( $key );
 
-				if ( ! isset( $response['response']['code'] ) || 200 !== $response['response']['code'] || ! $response['body'] || ! $response['body']['data'] ) {
+				$response = wp_remote_get( $url, array( 'timeout' => 60, 'sslverify' => false ) );
+
+				if ( is_wp_error( $response ) || ! isset( $response['response']['code'] ) || 200 !== $response['response']['code'] || ! $response['body'] ) {
+					return;
+				}
+				
+				$body = $response['body'];
+				$data = json_decode( $body, true );
+
+				if ( ! isset( $data['data'] ) ) {
 					return;
 				}
 
+				$data_arr = $data['data'];
+
 				// Add user data to session so we don't use unnecessary requests
-				$_SESSION['psp_user'] = base64_encode( $response['body']['data'] );
-				$data                 = json_decode( $response['body'], true );
-				$this->user_data      = $data['data'];
+				$_SESSION['psp_user'] = base64_encode( json_encode( $data_arr ) );
+				$this->user_data      = $data_arr;
 			}
 		}
 	}
