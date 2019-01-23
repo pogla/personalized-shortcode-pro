@@ -8,17 +8,17 @@
  * registers the activation and deactivation functions, and defines a function
  * that starts the plugin.
  *
- * @link              https://maticpogladic.com/
+ * @link              https://convertking.io
  * @since             1.0.0
  * @package           Personalized_Shortcode_Pro
  *
  * @wordpress-plugin
  * Plugin Name:       Personalized Shortcode Pro
- * Plugin URI:        https://maticpogladic.com/
+ * Plugin URI:        https://convertking.io/personalized-shortcode-pro/
  * Description:       Plugin enables you to use data from user in shortcodes.
- * Version:           1.0.0
- * Author:            Matic Pogladič
- * Author URI:        https://maticpogladic.com/
+ * Version:           1.0.1
+ * Author:            ConvertKing.io
+ * Author URI:        https://convertking.io
  * License:           GPL-2.0+
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
  * Text Domain:       personalized-shortcode-pro
@@ -34,7 +34,7 @@ if ( ! defined( 'WPINC' ) ) {
  * Currently plugin version.
  * SemVer - https://semver.org
  */
-define( 'PSP_VERSION', '1.0.0' );
+define( 'PSP_VERSION', '1.0.1' );
 define( 'PSP_PREFIX', 'psp_' );
 define( 'PSP_NAME', 'Personalized Shortcode Pro' );
 define( 'PSP_MIN_PHP_VER', '5.6' );

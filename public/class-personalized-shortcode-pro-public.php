@@ -107,12 +107,14 @@ class Personalized_Shortcode_Pro_Public {
 		$ajax_nonce = wp_create_nonce( 'psp-public-js-nonce' );
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/personalized-shortcode-pro-public.js', array( 'jquery' ), $this->version, false );
 
-		wp_localize_script(
-			$this->plugin_name, 'wp_vars', array(
-				'security' => $ajax_nonce,
-				'ajaxurl'  => admin_url( 'admin-ajax.php' ),
-			)
+		$scripts_object = array(
+			'security'         => $ajax_nonce,
+			'ajaxurl'          => admin_url( 'admin-ajax.php' ),
+			'snapchat_preload' => '1' === get_option( PSP_PREFIX . 'shapchat_preload' ),
+			'testing_ip'       => get_query_var( 'psp_debug_ip' ),
 		);
+
+		wp_localize_script( $this->plugin_name, 'wp_vars', $scripts_object );
 
 	}
 
@@ -126,6 +128,10 @@ class Personalized_Shortcode_Pro_Public {
 		if ( ! check_ajax_referer( 'psp-public-js-nonce', 'security', false ) || ! count( $_POST['values'] ) ) {
 			wp_send_json_error();
 		}
+
+		$ip = $_POST['testip'] ? $_POST['testip'] : false;
+
+		$this->set_user_data( $ip );
 
 		$response_array = array();
 
@@ -149,6 +155,10 @@ class Personalized_Shortcode_Pro_Public {
 		if ( ! check_ajax_referer( 'psp-public-js-nonce', 'security', false ) || ! count( $_POST['values'] ) ) {
 			wp_send_json_error();
 		}
+
+		$ip = $_POST['testip'] ? $_POST['testip'] : false;
+
+		$this->set_user_data( $ip );
 
 		$response_array = array();
 
@@ -203,7 +213,7 @@ class Personalized_Shortcode_Pro_Public {
 			return '';
 		}
 
-		$value = $this->get_user_data( $atts['type'] );
+		$value = ( '1' !== get_option( PSP_PREFIX . 'only_ajax' ) && '1' !== get_option( PSP_PREFIX . 'shapchat_preload' ) ) || isset( $_SESSION['psp_user'] ) ? $this->get_user_data( $atts['type'] ) : false;
 
 		if ( ! $value && $atts['default'] ) {
 			$value = $atts['default'];
@@ -235,7 +245,7 @@ class Personalized_Shortcode_Pro_Public {
 			}
 		}
 
-		return "<span class='psp-type' style='{$styles}' data-psp-type='{$value}'>{$value}</span>";
+		return "<span class='psp-type' style='{$styles}' data-psp-type='{$atts['type']}'>{$value}</span>";
 	}
 
 	/**
@@ -258,11 +268,14 @@ class Personalized_Shortcode_Pro_Public {
 			'exclude' => '',
 		), $atts );
 
-		$val = $this->get_user_data( $atts['type'] );
-
 		$output = $content;
-		if ( ! self::should_show_content( $atts['values'], $val, $atts['exclude'] ) ) {
-			$output = '';
+
+		if ( isset( $_SESSION['psp_user'] ) || ( '1' !== get_option( PSP_PREFIX . 'only_ajax' ) && '1' !== get_option( PSP_PREFIX . 'shapchat_preload' ) ) ) {
+			$val = $this->get_user_data( $atts['type'] );
+
+			if ( ! self::should_show_content( $atts['values'], $val, $atts['exclude'] ) ) {
+				$output = '';
+			}
 		}
 
 		return '<span class="psp-conditional" data-psp-id="' . $this->incremental_id++ . '" data-psp-content="' . $content . '" data-psp-values="' . $atts['values'] . '" data-psp-type="' . $atts['type'] . '" data-psp-exclude="' . $atts['exclude'] . '" style="display: inline;">' . $output . '</span>';
@@ -310,7 +323,6 @@ class Personalized_Shortcode_Pro_Public {
 	public function get_user_data( $type ) {
 
 		$this->set_user_data();
-//		echo '<pre>' . var_export($this->user_data, true) . '</pre>';die();
 
 		if ( ! $this->user_data || ! is_array( $this->user_data ) ) {
 			return false;
@@ -473,9 +485,11 @@ class Personalized_Shortcode_Pro_Public {
 	 *
 	 * @since 1.0.0
 	 *
+	 * @param string|false $ip
+	 *
 	 * @return void
 	 */
-	public function set_user_data() {
+	public function set_user_data( $ip = false ) {
 
 		if ( ! empty( $this->user_data ) ) {
 			return;
@@ -486,7 +500,9 @@ class Personalized_Shortcode_Pro_Public {
 			return;
 		}
 
-		$ip = self::get_user_ip();
+		if ( ! $ip ) {
+			$ip = self::get_user_ip();
+		}
 
 		$fs_options = get_option( 'fs_accounts' );
 
@@ -495,7 +511,7 @@ class Personalized_Shortcode_Pro_Public {
 		}
 
 		foreach ( $fs_options['all_licenses'][PSP_PLUGIN_ID] as $license ) {
-		
+
 			if ( ( $license->activated || $license->activated_local ) && ! $license->is_cancelled && time() < strtotime( $license->expiration ) ) {
 
 				$key = $license->secret_key;
@@ -508,7 +524,7 @@ class Personalized_Shortcode_Pro_Public {
 				if ( is_wp_error( $response ) || ! isset( $response['response']['code'] ) || 200 !== $response['response']['code'] || ! $response['body'] ) {
 					return;
 				}
-				
+
 				$body = $response['body'];
 				$data = json_decode( $body, true );
 
