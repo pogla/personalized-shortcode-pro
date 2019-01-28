@@ -3,7 +3,7 @@
 /**
  * The public-facing functionality of the plugin.
  *
- * @link       https://maticpogladic.com/
+ * @link       https://convertking.io/
  * @since      1.0.0
  *
  * @package    Personalized_Shortcode_Pro
@@ -18,7 +18,7 @@
  *
  * @package    Personalized_Shortcode_Pro
  * @subpackage Personalized_Shortcode_Pro/public
- * @author     Matic Pogladič <matic.pogladic@gmail.com>
+ * @author     Matic Pogladič <https://convertking.io>
  */
 
 use DeviceDetector\DeviceDetector;
@@ -565,12 +565,20 @@ class Personalized_Shortcode_Pro_Public {
 		}
 	}
 
+	/**
+	 * Show shortcode title
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $title
+	 *
+	 * @return mixed
+	 */
 	public function add_shortcodes_to_title( $title ) {
 
-		//Return new title if called inside loop
-		if ( in_the_loop() && is_main_query() ) {
-
-			global $post;
+		global $post;
+		
+		if ( ! is_admin() && is_singular() && $post && sanitize_title( $post->post_title ) === sanitize_title( $title ) ) {
 
 			if ( $post->ID ) {
 				$title_id = PSP_PREFIX . 'custom_title';

@@ -16,7 +16,7 @@
  * Plugin Name:       Personalized Shortcode Pro
  * Plugin URI:        https://convertking.io/personalized-shortcode-pro/
  * Description:       Plugin enables you to use data from user in shortcodes.
- * Version:           1.0.1
+ * Version:           1.0.2
  * Author:            ConvertKing.io
  * Author URI:        https://convertking.io
  * License:           GPL-2.0+
@@ -34,7 +34,7 @@ if ( ! defined( 'WPINC' ) ) {
  * Currently plugin version.
  * SemVer - https://semver.org
  */
-define( 'PSP_VERSION', '1.0.1' );
+define( 'PSP_VERSION', '1.0.2' );
 define( 'PSP_PREFIX', 'psp_' );
 define( 'PSP_NAME', 'Personalized Shortcode Pro' );
 define( 'PSP_MIN_PHP_VER', '5.6' );

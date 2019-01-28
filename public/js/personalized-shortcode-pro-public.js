@@ -1,17 +1,17 @@
-jQuery( document ).ready(
-	function( $ ) {
+var isSnapchat = navigator.userAgent.toLowerCase().indexOf( 'snapchat' ) >= 0;
 
-		var isSnapchat = navigator.userAgent.toLowerCase().indexOf( 'snapchat' ) >= 0;
+function onSnapchatPageShow() {
+	runPersonalization();
+}
 
-		if ( wp_vars.snapchat_preload && isSnapchat ) {
-			function onSnapchatPageShow() {
-				runPersonalization();
-			}
-		} else {
-			runPersonalization();
-		}
+// Run when not Snapchat
+if ( ! ( wp_vars.snapchat_preload && isSnapchat ) ) {
+	runPersonalization();
+}
 
-		function runPersonalization() {
+function runPersonalization() {
+	jQuery( document ).ready(
+		function( $ ) {
 
 			var valuesToCheck = [], conditionalValuesToCheck = [];
 
@@ -82,5 +82,5 @@ jQuery( document ).ready(
 				} );
 			}
 		}
-	}
-);
+	);
+}

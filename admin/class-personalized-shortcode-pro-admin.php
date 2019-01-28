@@ -3,7 +3,7 @@
 /**
  * The admin-specific functionality of the plugin.
  *
- * @link       https://maticpogladic.com/
+ * @link       https://convertking.io/
  * @since      1.0.0
  *
  * @package    Personalized_Shortcode_Pro
@@ -18,7 +18,7 @@
  *
  * @package    Personalized_Shortcode_Pro
  * @subpackage Personalized_Shortcode_Pro/admin
- * @author     Matic Pogladič <matic.pogladic@gmail.com>
+ * @author     Matic Pogladič <https://convertking.io>
  */
 class Personalized_Shortcode_Pro_Admin {
 
