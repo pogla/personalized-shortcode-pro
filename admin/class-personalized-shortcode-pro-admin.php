@@ -94,13 +94,27 @@ class Personalized_Shortcode_Pro_Admin {
 
 		add_settings_section( PSP_PREFIX . 'section', __( 'General Settings', 'personalized-shortcode-pro' ), null, 'psp-settings' );
 
+		add_settings_field( PSP_PREFIX . 'ipstack_api_key', __( 'Ipstack API key', 'personalized-shortcode-pro' ), array( $this, 'shortcode_ipstack_api_key_field_callback' ), 'psp-settings', PSP_PREFIX . 'section' );
 		add_settings_field( PSP_PREFIX . 'enable_titles', __( 'Enable Shortcodes in Titles', 'personalized-shortcode-pro' ), array( $this, 'shortcode_title_field_callback' ), 'psp-settings', PSP_PREFIX . 'section' );
 		add_settings_field( PSP_PREFIX . 'only_ajax', __( 'Use only AJAX', 'personalized-shortcode-pro' ), array( $this, 'shortcode_only_ajax_field_callback' ), 'psp-settings', PSP_PREFIX . 'section' );
 		add_settings_field( PSP_PREFIX . 'shapchat_preload', __( 'Snapchat preload mode', 'personalized-shortcode-pro' ), array( $this, 'shortcode_shapchat_preload_field_callback' ), 'psp-settings', PSP_PREFIX . 'section' );
 
+		register_setting( PSP_PREFIX . 'section', PSP_PREFIX . 'ipstack_api_key' );
 		register_setting( PSP_PREFIX . 'section', PSP_PREFIX . 'enable_titles' );
 		register_setting( PSP_PREFIX . 'section', PSP_PREFIX . 'only_ajax' );
 		register_setting( PSP_PREFIX . 'section', PSP_PREFIX . 'shapchat_preload' );
+	}
+
+	/**
+	 * API text field callback
+	 *
+	 * @since 1.0.0
+	 */
+	public function shortcode_ipstack_api_key_field_callback() {
+		?>
+		<input value='<?php echo get_option( PSP_PREFIX . 'ipstack_api_key' ); // WPCS XSS ok ?>' id="<?php echo PSP_PREFIX . 'ipstack_api_key'; // WPCS XSS ok ?>" name="<?php echo PSP_PREFIX . 'ipstack_api_key'; // WPCS XSS ok ?>" type="text" />
+		<p>Get your API key <a href="https://ipstack.com" target="_blank">here</a></p>
+		<?php
 	}
 
 	/**
