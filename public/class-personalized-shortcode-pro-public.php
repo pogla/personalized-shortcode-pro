@@ -3,7 +3,7 @@
 /**
  * The public-facing functionality of the plugin.
  *
- * @link       https://convertking.io/
+ * @link       https://maticpogladic.com/
  * @since      1.0.0
  *
  * @package    Personalized_Shortcode_Pro
@@ -18,7 +18,7 @@
  *
  * @package    Personalized_Shortcode_Pro
  * @subpackage Personalized_Shortcode_Pro/public
- * @author     Matic Pogladič <https://convertking.io>
+ * @author     Matic Pogladič <https://maticpogladic.com>
  */
 
 use DeviceDetector\DeviceDetector;
@@ -504,41 +504,30 @@ class Personalized_Shortcode_Pro_Public {
 			$ip = self::get_user_ip();
 		}
 
-		$fs_options = get_option( 'fs_accounts' );
+		$key = get_option( PSP_PREFIX . 'ipstack_api_key' );
 
-		if ( ! $fs_options || ! $fs_options['all_licenses'] || ! $fs_options['all_licenses'][ PSP_PLUGIN_ID ] ) {
+		if ( ! $key ) {
 			return;
 		}
 
-		foreach ( $fs_options['all_licenses'][PSP_PLUGIN_ID] as $license ) {
+		$url = "http://api.ipstack.com/$ip?access_key=$key";
 
-			if ( ( $license->activated || $license->activated_local ) && ! $license->is_cancelled && time() < strtotime( $license->expiration ) ) {
+		$response = wp_remote_get( $url, array( 'timeout' => 60, 'sslverify' => false ) );
 
-				$key = $license->secret_key;
-
-				$url  = 'https://api.convertking.io';
-				$url .= '/wp-json/ck/v1/ip-data?ip=' . $ip . '&api=' . base64_encode( $key );
-
-				$response = wp_remote_get( $url, array( 'timeout' => 60, 'sslverify' => false ) );
-
-				if ( is_wp_error( $response ) || ! isset( $response['response']['code'] ) || 200 !== $response['response']['code'] || ! $response['body'] ) {
-					return;
-				}
-
-				$body = $response['body'];
-				$data = json_decode( $body, true );
-
-				if ( ! isset( $data['data'] ) ) {
-					return;
-				}
-
-				$data_arr = $data['data'];
-
-				// Add user data to session so we don't use unnecessary requests
-				$_SESSION['psp_user'] = base64_encode( json_encode( $data_arr ) );
-				$this->user_data      = $data_arr;
-			}
+		if ( is_wp_error( $response ) || ! isset( $response['response']['code'] ) || 200 !== $response['response']['code'] || ! $response['body'] ) {
+			return;
 		}
+
+		$body = $response['body'];
+		$data = json_decode( $body, true );
+
+		if ( ! $data ) {
+			return;
+		}
+
+		// Add user data to session so we don't use unnecessary requests
+		$_SESSION['psp_user'] = base64_encode( json_encode( $data ) );
+		$this->user_data      = $data;
 	}
 
 	/**
@@ -577,7 +566,7 @@ class Personalized_Shortcode_Pro_Public {
 	public function add_shortcodes_to_title( $title ) {
 
 		global $post;
-		
+
 		if ( ! is_admin() && is_singular() && $post && sanitize_title( $post->post_title ) === sanitize_title( $title ) ) {
 
 			if ( $post->ID ) {

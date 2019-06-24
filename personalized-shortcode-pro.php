@@ -1,5 +1,4 @@
 <?php
-
 /**
  * The plugin bootstrap file
  *
@@ -8,7 +7,7 @@
  * registers the activation and deactivation functions, and defines a function
  * that starts the plugin.
  *
- * @link              https://convertking.io
+ * @link              https://maticpogladic.com
  * @since             1.0.0
  * @package           Personalized_Shortcode_Pro
  *
@@ -18,7 +17,7 @@
  * Description:       Plugin enables you to use data from user in shortcodes.
  * Version:           1.0.3
  * Author:            ConvertKing.io
- * Author URI:        https://convertking.io
+ * Author URI:        https://maticpogladic.com
  * License:           GPL-2.0+
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
  * Text Domain:       personalized-shortcode-pro

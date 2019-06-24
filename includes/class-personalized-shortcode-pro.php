@@ -6,7 +6,7 @@
  * A class definition that includes attributes and functions used across both the
  * public-facing side of the site and the admin area.
  *
- * @link       https://convertking.io
+ * @link       https://maticpogladic.com
  * @since      1.0.0
  *
  * @package    Personalized_Shortcode_Pro
@@ -25,7 +25,7 @@
  * @since      1.0.0
  * @package    Personalized_Shortcode_Pro
  * @subpackage Personalized_Shortcode_Pro/includes
- * @author     Matic Pogladič <https://convertking.io>
+ * @author     Matic Pogladič <https://maticpogladic.com>
  */
 class Personalized_Shortcode_Pro {
 
