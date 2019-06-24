@@ -1,6 +1,6 @@
 # Personalized Shortcodes Pro
 
-Shortcodes with visitor's info. Also enables usage of conditional content.
+Shortcodes with visitor's info. Also enables usage of conditional content. The plugin is based on ipstack.com API.
 
 ## Description
 
