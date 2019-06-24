@@ -13,7 +13,7 @@
  *
  * @wordpress-plugin
  * Plugin Name:       Personalized Shortcode Pro
- * Plugin URI:        https://convertking.io/personalized-shortcode-pro/
+ * Plugin URI:        https://maticpogladic.com/personalized-shortcode-pro/
  * Description:       Plugin enables you to use data from user in shortcodes.
  * Version:           1.0.3
  * Author:            ConvertKing.io
