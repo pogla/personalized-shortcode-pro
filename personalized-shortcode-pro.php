@@ -2,20 +2,14 @@
 /**
  * The plugin bootstrap file
  *
- * This file is read by WordPress to generate the plugin information in the plugin
- * admin area. This file also includes all of the dependencies used by the plugin,
- * registers the activation and deactivation functions, and defines a function
- * that starts the plugin.
- *
  * @link              https://maticpogladic.com
- * @since             1.0.0
  * @package           Personalized_Shortcode_Pro
  *
  * @wordpress-plugin
  * Plugin Name:       Personalized Shortcode Pro
  * Plugin URI:        https://maticpogladic.com/personalized-shortcode-pro/
  * Description:       Plugin enables you to use data from user in shortcodes.
- * Version:           1.0.3
+ * Version:           1.0
  * Author:            ConvertKing.io
  * Author URI:        https://maticpogladic.com
  * License:           GPL-2.0+
@@ -33,7 +27,7 @@ if ( ! defined( 'WPINC' ) ) {
  * Currently plugin version.
  * SemVer - https://semver.org
  */
-define( 'PSP_VERSION', '1.0.3' );
+define( 'PSP_VERSION', '1.0' );
 define( 'PSP_PREFIX', 'psp_' );
 define( 'PSP_NAME', 'Personalized Shortcode Pro' );
 define( 'PSP_MIN_PHP_VER', '5.6' );

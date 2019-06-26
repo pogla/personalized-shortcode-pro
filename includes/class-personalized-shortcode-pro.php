@@ -89,8 +89,9 @@ class Personalized_Shortcode_Pro {
 		if ( defined( 'PSP_VERSION' ) ) {
 			$this->version = PSP_VERSION;
 		} else {
-			$this->version = '1.0.1';
+			$this->version = '1.0';
 		}
+
 		$this->plugin_name = 'personalized-shortcode-pro';
 
 		$this->load_dependencies();
