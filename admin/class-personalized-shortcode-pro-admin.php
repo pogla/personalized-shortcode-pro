@@ -112,8 +112,8 @@ class Personalized_Shortcode_Pro_Admin {
 	 */
 	public function shortcode_ipstack_api_key_field_callback() {
 		?>
-		<input value='<?php echo get_option( PSP_PREFIX . 'ipstack_api_key' ); // WPCS XSS ok ?>' id="<?php echo PSP_PREFIX . 'ipstack_api_key'; // WPCS XSS ok ?>" name="<?php echo PSP_PREFIX . 'ipstack_api_key'; // WPCS XSS ok ?>" type="text" />
-		<p>Get your API key <a href="https://ipstack.com" target="_blank">here</a></p>
+			<input value='<?php echo get_option( PSP_PREFIX . 'ipstack_api_key' ); // WPCS XSS ok ?>' id="<?php echo PSP_PREFIX . 'ipstack_api_key'; // WPCS XSS ok ?>" name="<?php echo PSP_PREFIX . 'ipstack_api_key'; // WPCS XSS ok ?>" type="text" />
+			<p>Get your API key <a href="https://ipstack.com" target="_blank">here</a></p>
 		<?php
 	}
 
@@ -124,7 +124,7 @@ class Personalized_Shortcode_Pro_Admin {
 	 */
 	public function shortcode_title_field_callback() {
 		?>
-		<input value='1' id="<?php echo PSP_PREFIX . 'enable_titles'; // WPCS XSS ok ?>" name="<?php echo PSP_PREFIX . 'enable_titles'; // WPCS XSS ok ?>" type="checkbox" <?php checked( 1, get_option( PSP_PREFIX . 'enable_titles' ), true ); ?> />
+			<input value='1' id="<?php echo PSP_PREFIX . 'enable_titles'; // WPCS XSS ok ?>" name="<?php echo PSP_PREFIX . 'enable_titles'; // WPCS XSS ok ?>" type="checkbox" <?php checked( 1, get_option( PSP_PREFIX . 'enable_titles' ), true ); ?> />
 		<?php
 	}
 
@@ -135,7 +135,7 @@ class Personalized_Shortcode_Pro_Admin {
 	 */
 	public function shortcode_only_ajax_field_callback() {
 		?>
-		<input value='1' id="<?php echo PSP_PREFIX . 'only_ajax'; // WPCS XSS ok ?>" name="<?php echo PSP_PREFIX . 'only_ajax'; // WPCS XSS ok ?>" type="checkbox" <?php checked( 1, get_option( PSP_PREFIX . 'only_ajax' ), true ); ?> />
+			<input value='1' id="<?php echo PSP_PREFIX . 'only_ajax'; // WPCS XSS ok ?>" name="<?php echo PSP_PREFIX . 'only_ajax'; // WPCS XSS ok ?>" type="checkbox" <?php checked( 1, get_option( PSP_PREFIX . 'only_ajax' ), true ); ?> />
 		<?php
 	}
 
@@ -146,7 +146,7 @@ class Personalized_Shortcode_Pro_Admin {
 	 */
 	public function shortcode_shapchat_preload_field_callback() {
 		?>
-		<input value='1' id="<?php echo PSP_PREFIX . 'shapchat_preload'; // WPCS XSS ok ?>" name="<?php echo PSP_PREFIX . 'shapchat_preload'; // WPCS XSS ok ?>" type="checkbox" <?php checked( 1, get_option( PSP_PREFIX . 'shapchat_preload' ), true ); ?> />
+			<input value='1' id="<?php echo PSP_PREFIX . 'shapchat_preload'; // WPCS XSS ok ?>" name="<?php echo PSP_PREFIX . 'shapchat_preload'; // WPCS XSS ok ?>" type="checkbox" <?php checked( 1, get_option( PSP_PREFIX . 'shapchat_preload' ), true ); ?> />
 		<?php
 	}
 
@@ -175,8 +175,8 @@ class Personalized_Shortcode_Pro_Admin {
 		$title_id = PSP_PREFIX . 'custom_title';
 		$title    = get_post_meta( $post->ID, '_' . $title_id, true );
 		?>
-		<label for="<?php echo $title_id; ?>">Custom title with shortcodes</label>
-		<textarea name="<?php echo $title_id; ?>" id="<?php echo $title_id; ?>" style="width: 100%;"><?php echo $title; ?></textarea>
+			<label for="<?php echo $title_id; ?>">Custom title with shortcodes</label>
+			<textarea name="<?php echo $title_id; ?>" id="<?php echo $title_id; ?>" style="width: 100%;"><?php echo $title; ?></textarea>
 		<?php
 	}
 
@@ -191,7 +191,7 @@ class Personalized_Shortcode_Pro_Admin {
 		update_post_meta(
 			$post_id,
 			'_' . $title_id,
-			$_POST[ $title_id ]
+			sanitize_text_field( $_POST[ $title_id ] )
 		);
 	}
 

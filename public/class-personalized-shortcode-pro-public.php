@@ -129,13 +129,14 @@ class Personalized_Shortcode_Pro_Public {
 			wp_send_json_error();
 		}
 
-		$ip = $_POST['testip'] ? $_POST['testip'] : false;
+		$ip = isset( $_POST['testip'] ) ? sanitize_text_field( $_POST['testip'] ) : false;
 
 		$this->set_user_data( $ip );
 
 		$response_array = array();
 
 		foreach ( $_POST['values'] as $type ) {
+			$type             = sanitize_text_field( $type );
 			$response_array[] = array(
 				'type'  => $type,
 				'value' => $this->get_user_data( $type ),
@@ -156,7 +157,7 @@ class Personalized_Shortcode_Pro_Public {
 			wp_send_json_error();
 		}
 
-		$ip = $_POST['testip'] ? $_POST['testip'] : false;
+		$ip = isset( $_POST['testip'] ) ? sanitize_text_field( $_POST['testip'] ) : false;
 
 		$this->set_user_data( $ip );
 
@@ -164,6 +165,7 @@ class Personalized_Shortcode_Pro_Public {
 
 		foreach ( $_POST['values'] as $item ) {
 
+			$item    = array_map( 'esc_attr', $item );
 			$val     = $this->get_user_data( $item['type'] );
 			$content = $item['content'];
 
@@ -295,7 +297,7 @@ class Personalized_Shortcode_Pro_Public {
 		$values = explode( ',', $values );
 
 		foreach ( $values as $value ) {
-			$value = trim( $value );
+			$value = sanitize_text_field( trim( $value ) );
 			if ( strtolower( $value ) == strtolower( $type_val ) ) {
 
 				if ( 'true' != $exclude ) {
@@ -430,45 +432,35 @@ class Personalized_Shortcode_Pro_Public {
 			if ( isset( $client_info['name'] ) && $client_info['name'] ) {
 				return $client_info['name'];
 			}
-		}
-
-		if ( 'os' === $type ) {
+		} elseif ( 'os' === $type ) {
 
 			$os_info = $this->user_info->getOs();
 
 			if ( isset( $os_info['name'] ) && $os_info['name'] ) {
 				return $os_info['name'];
 			}
-		}
-
-		if ( 'device_brand' === $type ) {
+		} elseif ( 'device_brand' === $type ) {
 
 			$brand_info = $this->user_info->getBrandName();
 
 			if ( isset( $brand_info ) && $brand_info ) {
 				return $brand_info;
 			}
-		}
-
-		if ( 'device_model' === $type ) {
+		} elseif ( 'device_model' === $type ) {
 
 			$device_model = $this->user_info->getModel();
 
 			if ( isset( $device_model ) && $device_model ) {
 				return $device_model;
 			}
-		}
-
-		if ( 'device_type' === $type ) {
+		} elseif ( 'device_type' === $type ) {
 
 			$device_info = $this->user_info->getDeviceName();
 
 			if ( isset( $device_info ) && $device_info ) {
 				return $device_info;
 			}
-		}
-
-		if ( 'browser_family' === $type ) {
+		} elseif ( 'browser_family' === $type ) {
 
 			$browser_family = \DeviceDetector\Parser\Client\Browser::getBrowserFamily( $this->user_info->getClient( 'short_name' ) );
 

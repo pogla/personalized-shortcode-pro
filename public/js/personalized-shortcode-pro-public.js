@@ -68,7 +68,6 @@ function runPersonalization() {
 
 					if ( response.data && response.data.length ) {
 
-
 						$.each( response.data, function( i, item ){
 
 							if ( item.id ) {
