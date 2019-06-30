@@ -476,7 +476,7 @@ class Personalized_Shortcode_Pro_Public {
 			return;
 		}
 
-		if ( isset( $_COOKIE['psp_user'] ) && ! get_query_var( 'psp_debug_ip' ) ) {
+		if ( isset( $_COOKIE['psp_user'] ) && ! isset( $_GET['psp_debug_ip'] ) ) {
 			$this->user_data = json_decode( base64_decode( $_COOKIE['psp_user'] ), true );
 			return;
 		}
@@ -520,7 +520,7 @@ class Personalized_Shortcode_Pro_Public {
 	 */
 	public static function get_user_ip() {
 
-		$debug_ip = get_query_var( 'psp_debug_ip' );
+		$debug_ip = sanitize_text_field( $_GET['psp_debug_ip'] );
 
 		if ( $debug_ip ) {
 			return $debug_ip;
@@ -561,5 +561,9 @@ class Personalized_Shortcode_Pro_Public {
 		}
 
 		return $title;
+	}
+
+	public function start_session() {
+		$this->set_user_data();
 	}
 }
