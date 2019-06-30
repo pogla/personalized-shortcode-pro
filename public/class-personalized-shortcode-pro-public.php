@@ -183,17 +183,6 @@ class Personalized_Shortcode_Pro_Public {
 	}
 
 	/**
-	 * Start session if not started yet
-	 *
-	 * @since 1.0.0
-	 */
-	public function start_session() {
-		if ( ! session_id() ) {
-			session_start();
-		}
-	}
-
-	/**
 	 * Shortcode to show visitor data
 	 *
 	 * @since 1.0.0
@@ -215,7 +204,7 @@ class Personalized_Shortcode_Pro_Public {
 			return '';
 		}
 
-		$value = ( '1' !== get_option( PSP_PREFIX . 'only_ajax' ) && '1' !== get_option( PSP_PREFIX . 'shapchat_preload' ) ) || isset( $_SESSION['psp_user'] ) ? $this->get_user_data( $atts['type'] ) : false;
+		$value = ( '1' !== get_option( PSP_PREFIX . 'only_ajax' ) && '1' !== get_option( PSP_PREFIX . 'shapchat_preload' ) ) || isset( $_COOKIE['psp_user'] ) ? $this->get_user_data( $atts['type'] ) : false;
 
 		if ( ! $value && $atts['default'] ) {
 			$value = $atts['default'];
@@ -272,7 +261,7 @@ class Personalized_Shortcode_Pro_Public {
 
 		$output = $content;
 
-		if ( isset( $_SESSION['psp_user'] ) || ( '1' !== get_option( PSP_PREFIX . 'only_ajax' ) && '1' !== get_option( PSP_PREFIX . 'shapchat_preload' ) ) ) {
+		if ( isset( $_COOKIE['psp_user'] ) || ( '1' !== get_option( PSP_PREFIX . 'only_ajax' ) && '1' !== get_option( PSP_PREFIX . 'shapchat_preload' ) ) ) {
 			$val = $this->get_user_data( $atts['type'] );
 
 			if ( ! self::should_show_content( $atts['values'], $val, $atts['exclude'] ) ) {
@@ -487,8 +476,8 @@ class Personalized_Shortcode_Pro_Public {
 			return;
 		}
 
-		if ( isset( $_SESSION['psp_user'] ) && ! get_query_var( 'psp_debug_ip' ) ) {
-			$this->user_data = json_decode( base64_decode( $_SESSION['psp_user'] ), true );
+		if ( isset( $_COOKIE['psp_user'] ) && ! get_query_var( 'psp_debug_ip' ) ) {
+			$this->user_data = json_decode( base64_decode( $_COOKIE['psp_user'] ), true );
 			return;
 		}
 
@@ -518,8 +507,8 @@ class Personalized_Shortcode_Pro_Public {
 		}
 
 		// Add user data to session so we don't use unnecessary requests
-		$_SESSION['psp_user'] = base64_encode( json_encode( $data ) );
-		$this->user_data      = $data;
+		setcookie( 'psp_user', base64_encode( json_encode( $data ) ) );
+		$this->user_data = $data;
 	}
 
 	/**
