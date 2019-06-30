@@ -165,7 +165,7 @@ class Personalized_Shortcode_Pro_Public {
 
 		foreach ( $_POST['values'] as $item ) {
 
-			$item    = array_map( 'esc_attr', $item );
+			$item    = array_map( 'sanitize_text_field', $item );
 			$val     = $this->get_user_data( $item['type'] );
 			$content = $item['content'];
 
