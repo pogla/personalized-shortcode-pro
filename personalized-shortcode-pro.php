@@ -9,7 +9,7 @@
  * Plugin Name:       Personalized Shortcode Pro
  * Plugin URI:        https://maticpogladic.com/personalized-shortcode-pro/
  * Description:       Plugin enables you to use data from user in shortcodes.
- * Version:           1.0
+ * Version:           1.0.1
  * Author:            Matic Pogladič
  * Author URI:        https://maticpogladic.com
  * License:           GPL-2.0+
@@ -27,7 +27,7 @@ if ( ! defined( 'WPINC' ) ) {
  * Currently plugin version.
  * SemVer - https://semver.org
  */
-define( 'PSP_VERSION', '1.0' );
+define( 'PSP_VERSION', '1.0.1' );
 define( 'PSP_PREFIX', 'psp_' );
 define( 'PSP_NAME', 'Personalized Shortcode Pro' );
 define( 'PSP_MIN_PHP_VER', '5.6' );

@@ -6,6 +6,7 @@ Requires at least: 4.2
 Tested up to: 5.2.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
+Stable tag: 1.0.1
 
 Shortcodes with all the visitor's info that we can get (country, IP, country phone code, country flag emoji, city...).
 It's also possible to write conditional content. If you want to exclude or include some content only for specific countries, continents or any other attribute you can easily achieve it with this plugin.
@@ -48,6 +49,9 @@ If you find a bug, please report it to the [Github repository](https://github.co
 = I want this plugin to do more! =
 
 If you want a certain feature to be added, please add issue to [Github repository](https://github.com/pogla/personalized-shortcode-pro/issues).
+
+= 1.0.1 =
+Fix notice
 
 = 1.0 =
 Initial release
