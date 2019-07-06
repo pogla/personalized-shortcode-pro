@@ -520,7 +520,7 @@ class Personalized_Shortcode_Pro_Public {
 	 */
 	public static function get_user_ip() {
 
-		$debug_ip = sanitize_text_field( $_GET['psp_debug_ip'] );
+		$debug_ip = isset( $_GET['psp_debug_ip'] ) ? sanitize_text_field( $_GET['psp_debug_ip'] ) : false;
 
 		if ( $debug_ip ) {
 			return $debug_ip;

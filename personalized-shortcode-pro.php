@@ -10,7 +10,7 @@
  * Plugin URI:        https://maticpogladic.com/personalized-shortcode-pro/
  * Description:       Plugin enables you to use data from user in shortcodes.
  * Version:           1.0
- * Author:            ConvertKing.io
+ * Author:            Matic Pogladič
  * Author URI:        https://maticpogladic.com
  * License:           GPL-2.0+
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
